@@ -24,4 +24,13 @@ body {
     width: 95%;
     margin: 0 auto;
     padding-top: 2.5rem;
+
+    .seccion {
+        display: none;
+        margin-top: 2.5rem;
+    }
+}
+
+.mostrar-seccion {
+    display: block!important;
 }
