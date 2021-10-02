@@ -230,6 +230,9 @@ function mostrarResumen() {
         divResumen.appendChild(noServicios);
         return;
     }
+
+    const headingTurno = document.createElement('H3');
+    headingTurno.textContent = 'Resumen del turno'
     // Mostrar resumen
     const nombreTurno = document.createElement('P');
     nombreTurno.innerHTML = `<span>Nombre:</span> ${nombre}`;
@@ -240,6 +243,14 @@ function mostrarResumen() {
 
     const serviciosTurno = document.createElement('DIV');
     serviciosTurno.classList.add('resumen-servicios');
+
+    const headingServicios = document.createElement('H3');
+    headingServicios.textContent = 'Resumen de servicios';
+
+    serviciosTurno.appendChild(headingServicios);
+
+    let cantidad = 0;
+
     //Iterar sobre el arreglo de servicios para mostrarlos en el resumen
     servicios.forEach(servicio => {
         const { nombre, precio } = servicio;
@@ -251,19 +262,32 @@ function mostrarResumen() {
 
         const precioServicio = document.createElement('P');
         precioServicio.textContent = precio;
+        precioServicio.classList.add('precio');
+
+        const totalServicios = precio.split('$');
+        cantidad += parseInt(totalServicios[1].trim());
 
         // Colocar texto y precio en el div
         contenedorServicio.appendChild(textoServicio);
         contenedorServicio.appendChild(precioServicio);
 
         serviciosTurno.appendChild(contenedorServicio);
-    })
+    });
+
+
 
     //Agregar a divResumen
+    divResumen.appendChild(headingTurno);
     divResumen.appendChild(nombreTurno);
     divResumen.appendChild(fechaTurno);
     divResumen.appendChild(horaTurno);
     divResumen.appendChild(serviciosTurno);
+
+    const totalAPagar = document.createElement('P');
+    totalAPagar.classList.add('total');
+    totalAPagar.innerHTML = `<span>Total a Pagar:</span> $ ${cantidad}`;
+
+    divResumen.appendChild(totalAPagar);
 }
 
 function nombreTurno() {
