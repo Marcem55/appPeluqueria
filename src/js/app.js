@@ -37,8 +37,11 @@ function iniciarApp() {
     // Almacena la fecha del turno
     fechaTurno();
 
-    // Deshabilitar dias anteriores
-    deshabilitarDias();
+    // Almacenar la hora del turno
+    horaTurno();
+
+    // Deshabilitar dias anteriores 
+    // deshabilitarDias();   (reever porque no funciona)
 }
 
 function mostrarSeccion() {
@@ -197,6 +200,7 @@ function botonesPaginador() {
     } else if(pagina === 3){
         paginaSiguiente.classList.add('ocultar');
         paginaAnterior.classList.remove('ocultar');
+        mostrarResumen(); // Mostrar el resumen del turno en la pagina 3
     } else {
         paginaAnterior.classList.remove('ocultar');
         paginaSiguiente.classList.remove('ocultar');
@@ -211,6 +215,11 @@ function mostrarResumen() {
     // Seleccionar el resumen
     const divResumen = document.querySelector('.contenido-resumen');
 
+    //Limpiar el HTML previo
+    while(divResumen.firstChild) {
+        divResumen.removeChild(divResumen.firstChild);
+    };
+
     // Validacion de objeto
     if(Object.values(turno).includes('')) {
         const noServicios = document.createElement('P');
@@ -219,7 +228,42 @@ function mostrarResumen() {
 
         // Agregar a divResumen
         divResumen.appendChild(noServicios);
+        return;
     }
+    // Mostrar resumen
+    const nombreTurno = document.createElement('P');
+    nombreTurno.innerHTML = `<span>Nombre:</span> ${nombre}`;
+    const fechaTurno = document.createElement('P');
+    fechaTurno.innerHTML = `<span>Fecha:</span> ${fecha}`;
+    const horaTurno = document.createElement('P');
+    horaTurno.innerHTML = `<span>Hora:</span> ${hora}`;
+
+    const serviciosTurno = document.createElement('DIV');
+    serviciosTurno.classList.add('resumen-servicios');
+    //Iterar sobre el arreglo de servicios para mostrarlos en el resumen
+    servicios.forEach(servicio => {
+        const { nombre, precio } = servicio;
+        const contenedorServicio = document.createElement('DIV');
+        contenedorServicio.classList.add('contenedor-servicio');
+
+        const textoServicio = document.createElement('P');
+        textoServicio.textContent = nombre;
+
+        const precioServicio = document.createElement('P');
+        precioServicio.textContent = precio;
+
+        // Colocar texto y precio en el div
+        contenedorServicio.appendChild(textoServicio);
+        contenedorServicio.appendChild(precioServicio);
+
+        serviciosTurno.appendChild(contenedorServicio);
+    })
+
+    //Agregar a divResumen
+    divResumen.appendChild(nombreTurno);
+    divResumen.appendChild(fechaTurno);
+    divResumen.appendChild(horaTurno);
+    divResumen.appendChild(serviciosTurno);
 }
 
 function nombreTurno() {
@@ -262,7 +306,7 @@ function mostrarAlerta(mensaje, tipo) {
     // Eliminar la alerta despues de 3 segundos
     setTimeout(() =>{
         alerta.remove();
-    },2000)
+    }, 3000);
 }
 
 function fechaTurno() {
@@ -272,26 +316,42 @@ function fechaTurno() {
         if([0, 6].includes(fecha)) {
             e.preventDefault();
             fechaInput.value = '';
-            console.log('No trabajo los findes papaaa');
+            mostrarAlerta('Fines de semana cerrado', 'error');
         } else {
             turno.fecha = fechaInput.value;
         }
     })
 }
 
-function deshabilitarDias() {
-    const fechaActual = new Date();
-    const dia = fechaActual.getDate();
-    var _mes = fechaActual.getMonth();
-    _mes = _mes + 1;
-    if(_mes < 10) {
-        var mes = '0' + _mes;
-    } else {
-        var mes = _mes.toString();
-    }
-    const year = fechaActual.getFullYear();
-
-    // Formato deseado: DD-MM-AAAA
-    const fechaVieja = `${dia}-${mes}-${year}`;
-    document.getElementById("#fecha").min = fechaVieja; 
+function horaTurno() {
+    const horaInput = document.querySelector('#hora');
+    horaInput.addEventListener('input', e => {
+        const horaTurno = e.target.value;
+        const hora = horaTurno.split(':');
+        if(hora[0] < 10 || hora[0] > 20) {
+            mostrarAlerta('Abrimos de 10:00 a 20:00hs', 'error');
+            setTimeout(() => {
+                horaInput.value = ''; 
+            }, 3000);
+        } else {
+            turno.hora = horaTurno;
+        }
+    })
 }
+
+// function deshabilitarDias() {
+//     const fechaActual = new Date();
+//     const dia = fechaActual.getDate();
+//     var _mes = fechaActual.getMonth();
+//     _mes = _mes + 1;
+//     if(_mes < 10) {
+//         var mes = '0' + _mes;
+//     } else {
+//         var mes = _mes.toString();
+//     }
+//     const year = fechaActual.getFullYear();
+
+//     // Formato deseado: DD-MM-AAAA
+//     const fechaVieja = `${dia}-${mes}-${year}`;
+//     document.getElementById("#fecha").min = fechaVieja; 
+// }
