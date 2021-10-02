@@ -30,6 +30,15 @@ function iniciarApp() {
 
     // Muestra el resumen del turno o mensaje de error si no pasa la validacion
     mostrarResumen();
+
+    // Almacenar el nombre del turno
+    nombreTurno();
+
+    // Almacena la fecha del turno
+    fechaTurno();
+
+    // Deshabilitar dias anteriores
+    deshabilitarDias();
 }
 
 function mostrarSeccion() {
@@ -136,9 +145,31 @@ function seleccionarServicio(e) {
     }
     if(elemento.classList.contains('seleccionado')) {
         elemento.classList.remove('seleccionado');
+
+        const id = parseInt(elemento.dataset.idServicio);
+
+        eliminarServicio(id);
     } else {
         elemento.classList.add('seleccionado');
+
+        const servicioObj = {
+            id: parseInt(elemento.dataset.idServicio), 
+            nombre: elemento.firstElementChild.textContent, // Tomo el primer hijo del div padre del html
+            precio: elemento.firstElementChild.nextElementSibling.textContent // Tomo el hijo que le sigue con la funcion Sibling
+        }
+        agregarServicio(servicioObj);
     }
+}
+
+function agregarServicio(obj) {
+    const { servicios } = turno;
+    turno.servicios = [...servicios, obj];
+}
+
+function eliminarServicio(id) {
+    const { servicios } = turno;
+    turno.servicios = servicios.filter(servicio => servicio.id !== id);
+
 }
 
 function paginaSiguiente() {
@@ -189,4 +220,78 @@ function mostrarResumen() {
         // Agregar a divResumen
         divResumen.appendChild(noServicios);
     }
+}
+
+function nombreTurno() {
+    const inputNombre = document.querySelector('#nombre');
+    inputNombre.addEventListener('input', e => {
+        const nombreTexto = e.target.value.trim();
+
+        // Validacion de que el input nombre no debe ser espacios en blanco o vacio
+        if(nombreTexto === '' || nombreTexto.length < 3) {
+            mostrarAlerta('El nombre debe tener al menos 3 caracteres', 'error');
+        } else {
+            const alerta = document.querySelector('.alerta');
+            if(alerta) {
+                alerta.remove();
+            }
+            turno.nombre = nombreTexto;
+        }
+    })
+}
+
+function mostrarAlerta(mensaje, tipo) {
+    // Si hay una alerta previa no crear otra
+    const alertaPrevia = document.querySelector('.alerta');
+    if(alertaPrevia) {
+        return;
+    }
+
+    const alerta = document.createElement('DIV');
+    alerta.textContent = mensaje;
+    alerta.classList.add('alerta');
+
+    if(tipo === 'error') {
+        alerta.classList.add('error');
+    }
+
+    //Insertar en el HTML
+    const formulario = document.querySelector('.formulario');
+    formulario.appendChild(alerta);
+
+    // Eliminar la alerta despues de 3 segundos
+    setTimeout(() =>{
+        alerta.remove();
+    },2000)
+}
+
+function fechaTurno() {
+    const fechaInput = document.querySelector('#fecha');
+    fechaInput.addEventListener('input', e => {
+        const fecha = new Date(e.target.value).getUTCDay();
+        if([0, 6].includes(fecha)) {
+            e.preventDefault();
+            fechaInput.value = '';
+            console.log('No trabajo los findes papaaa');
+        } else {
+            turno.fecha = fechaInput.value;
+        }
+    })
+}
+
+function deshabilitarDias() {
+    const fechaActual = new Date();
+    const dia = fechaActual.getDate();
+    var _mes = fechaActual.getMonth();
+    _mes = _mes + 1;
+    if(_mes < 10) {
+        var mes = '0' + _mes;
+    } else {
+        var mes = _mes.toString();
+    }
+    const year = fechaActual.getFullYear();
+
+    // Formato deseado: DD-MM-AAAA
+    const fechaVieja = `${dia}-${mes}-${year}`;
+    document.getElementById("#fecha").min = fechaVieja; 
 }
