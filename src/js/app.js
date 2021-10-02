@@ -1,5 +1,12 @@
 let pagina = 1;
 
+const turno = {
+    nombre: '',
+    fecha: '',
+    hora: '',
+    servicios: []
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     iniciarApp();
 });
@@ -12,11 +19,34 @@ function iniciarApp() {
 
     // Oculta o muestra una seccion segun el tab que esta presionado
     cambiarSeccion();
+
+    // Paginacion
+    paginaSiguiente();
+
+    paginaAnterior();
+
+    // Comprueba la pagina actual para mostrar u ocultar la paginacion
+    botonesPaginador();
+
+    // Muestra el resumen del turno o mensaje de error si no pasa la validacion
+    mostrarResumen();
 }
 
 function mostrarSeccion() {
+    //Eliminar 'mostrar-seccion' de la seccion anterior
+    const seccionAnterior = document.querySelector('.mostrar-seccion');
+    if(seccionAnterior) {
+        seccionAnterior.classList.remove('mostrar-seccion');
+    }
+
     const seccionActual = document.querySelector(`#paso-${pagina}`);
     seccionActual.classList.add('mostrar-seccion');
+
+    // Eliminar la clase actual en el tab anterior
+    const tabAnterior = document.querySelector('.tabs .actual');
+    if(tabAnterior) {
+        tabAnterior.classList.remove('actual');
+    }
 
     // Resaltar el tab actual
     const tab = document.querySelector(`[data-paso="${pagina}"]`);
@@ -31,19 +61,26 @@ function cambiarSeccion() {
             e.preventDefault();
             pagina = parseInt(e.target.dataset.paso);
 
-            //Eliminar 'mostrar-seccion' de la seccion anterior
-            document.querySelector('.mostrar-seccion').classList.remove('mostrar-seccion');
+            // COMENTO TODO ESE CODIGO PORQUE ESTA DEFINIDO MAS ARRIBA, LO TENIA ANTES PARA HACERLO SIN LA PAGINACION
 
-            //Agrega mostrar-seccion donde dimos click
-            const seccion = document.querySelector(`#paso-${pagina}`);
-            seccion.classList.add('mostrar-seccion');
+            // //Eliminar 'mostrar-seccion' de la seccion anterior
+            // document.querySelector('.mostrar-seccion').classList.remove('mostrar-seccion');
 
-            // Eliminar la clase actual en el tab anterior
-            document.querySelector('.tabs .actual').classList.remove('actual');
+            // //Agrega mostrar-seccion donde dimos click
+            // const seccion = document.querySelector(`#paso-${pagina}`);
+            // seccion.classList.add('mostrar-seccion');
 
-            // Agregar la clase actual en el nuevo tab
-            const tab = document.querySelector(`[data-paso="${pagina}"]`);
-            tab.classList.add('actual');
+            // // Eliminar la clase actual en el tab anterior
+            // document.querySelector('.tabs .actual').classList.remove('actual');
+
+            // // Agregar la clase actual en el nuevo tab
+            // const tab = document.querySelector(`[data-paso="${pagina}"]`);
+            // tab.classList.add('actual');
+
+            // Llamar a la funcion de mostrar seccion
+            mostrarSeccion();
+
+            botonesPaginador();
         })
     })
 }
@@ -101,5 +138,55 @@ function seleccionarServicio(e) {
         elemento.classList.remove('seleccionado');
     } else {
         elemento.classList.add('seleccionado');
+    }
+}
+
+function paginaSiguiente() {
+    const paginaSiguiente = document.querySelector('#siguiente');
+    paginaSiguiente.addEventListener('click', () => {
+        pagina++;
+        botonesPaginador();
+    })
+}
+
+function paginaAnterior() {
+    const paginaAnterior = document.querySelector('#anterior');
+    paginaAnterior.addEventListener('click', () => {
+        pagina--;
+        botonesPaginador();
+    })
+}
+
+function botonesPaginador() {
+    const paginaSiguiente = document.querySelector('#siguiente');
+    const paginaAnterior = document.querySelector('#anterior');
+
+    if(pagina === 1) {
+        paginaAnterior.classList.add('ocultar');
+    } else if(pagina === 3){
+        paginaSiguiente.classList.add('ocultar');
+        paginaAnterior.classList.remove('ocultar');
+    } else {
+        paginaAnterior.classList.remove('ocultar');
+        paginaSiguiente.classList.remove('ocultar');
+    }
+    mostrarSeccion();
+}
+
+function mostrarResumen() {
+    // Destructuring
+    const { nombre, fecha, hora, servicios } = turno;
+
+    // Seleccionar el resumen
+    const divResumen = document.querySelector('.contenido-resumen');
+
+    // Validacion de objeto
+    if(Object.values(turno).includes('')) {
+        const noServicios = document.createElement('P');
+        noServicios.textContent = 'Faltan datos de servicios, nombre, fecha u hora';
+        noServicios.classList.add('invalidar-turno');
+
+        // Agregar a divResumen
+        divResumen.appendChild(noServicios);
     }
 }
