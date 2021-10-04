@@ -286,7 +286,13 @@ function mostrarResumen() {
     const totalAPagar = document.createElement('P');
     totalAPagar.classList.add('total');
     totalAPagar.innerHTML = `<span>Total a Pagar:</span> $ ${cantidad}`;
-
+    if(cantidad === 0) {
+        const sinServicios = document.createElement('P');
+        sinServicios.textContent = 'No hay servicios seleccionados para el turno';
+        sinServicios.classList.add('sin-servicios');
+        headingServicios.appendChild(sinServicios);
+        return;
+    }
     divResumen.appendChild(totalAPagar);
 }
 
@@ -330,7 +336,7 @@ function mostrarAlerta(mensaje, tipo) {
     // Eliminar la alerta despues de 3 segundos
     setTimeout(() =>{
         alerta.remove();
-    }, 3000);
+    }, 5000);
 }
 
 function fechaTurno() {
