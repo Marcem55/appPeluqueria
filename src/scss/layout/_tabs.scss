@@ -1,4 +1,8 @@
 .tabs {
+    @include telefonoChico {
+        display: flex;
+        flex-direction: column;
+    }
     @include grid(3, 2rem);
     button {
         background-color: $blanco;

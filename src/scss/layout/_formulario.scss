@@ -17,6 +17,17 @@
         border-radius: 1rem;
         border: none;
     }
+    @include telefonoChico {
+        display: flex;
+        flex-direction: column;
+        label {
+            flex: 0 0 0;
+            margin-bottom: 2rem;
+        }
+        input {
+            width: 95%;
+        }
+    }
 }
 
 .alerta {
