@@ -1,6 +1,7 @@
 # appPeluqueria
 
 Aplicación para salones de belleza/peluquerías con sistema de turnos en la cual el usuario puede seleccionar los servicios deseados y agendar su turno dentro de los días y horas válidas.
+
 Tecnologías implementadas: 
 <ul>
   <li>HTML</li>
